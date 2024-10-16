@@ -10,6 +10,9 @@ ENV APP_PORT=3000 \
     PATH="$PNPM_HOME:$PATH"
     ENV TZ=Asia/Shanghai
 
+# 设置 npm 源
+RUN npm config set registry https://registry.npmmirror.com    
+
 # 启用 corepack 和安装 pnpm
 RUN corepack enable \
     && yarn global add pm2
