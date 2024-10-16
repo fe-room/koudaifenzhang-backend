@@ -1,73 +1,70 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+![alt text](image.png)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+根据上面提供的流程图，可以设计以下数据库表来支持记账系统的功能。表的设计主要围绕账本（单人、多人的分类）、账本共享人员、分账类型（AA或按详细比例）等几个核心功能。
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### 1. `account_books` 表
+用于存储账本的基本信息，包括账本类型（单人账本、多人账本）。
 
-## Description
+| 字段名             | 数据类型            | 说明                  |
+|------------------|-----------------|---------------------|
+| `id`             | `BIGINT`        | 主键，账本ID           |
+| `name`           | `VARCHAR(255)`  | 账本名称               |
+| `type`           | `ENUM('single', 'group')` | 账本类型，单人或多人      |
+| `created_by`     | `BIGINT`        | 创建人ID             |
+| `created_at`     | `DATETIME`      | 创建时间               |
+| `updated_at`     | `DATETIME`      | 更新时间               |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 2. `account_book_members` 表
+存储多人账本的共享成员信息。
 
-## Installation
+| 字段名             | 数据类型          | 说明                    |
+|------------------|---------------|-----------------------|
+| `id`             | `BIGINT`      | 主键，成员ID             |
+| `account_book_id`| `BIGINT`      | 所属账本的ID             |
+| `user_id`        | `BIGINT`      | 成员的用户ID             |
+| `invitation_type`| `ENUM('manual', 'wechat')` | 邀请类型（手动或微信邀请） |
+| `joined_at`      | `DATETIME`    | 成员加入时间              |
 
-```bash
-$ pnpm install
-```
+### 3. `transactions` 表
+用于记录每一笔账目的详细信息，包括账本类型和分账类型。
 
-## Running the app
+| 字段名             | 数据类型            | 说明                       |
+|------------------|-----------------|--------------------------|
+| `id`             | `BIGINT`        | 主键，交易ID                |
+| `account_book_id`| `BIGINT`        | 所属账本的ID                |
+| `amount`         | `DECIMAL(10, 2)`| 交易金额                    |
+| `description`    | `TEXT`          | 交易描述                    |
+| `transaction_type` | `ENUM('single', 'group')` | 账本类型，单人或多人           |
+| `split_type`     | `ENUM('aa', 'detailed')` | 分账类型（AA或按比例）         |
+| `created_by`     | `BIGINT`        | 创建交易的用户ID             |
+| `created_at`     | `DATETIME`      | 交易创建时间                 |
 
-```bash
-# development
-$ pnpm run start
+### 4. `transaction_splits` 表
+存储每笔交易的详细分账信息，适用于多人账本。
 
-# watch mode
-$ pnpm run start:dev
+| 字段名             | 数据类型            | 说明                       |
+|------------------|-----------------|--------------------------|
+| `id`             | `BIGINT`        | 主键，分账记录ID             |
+| `transaction_id` | `BIGINT`        | 所属交易的ID                |
+| `user_id`        | `BIGINT`        | 分账的用户ID                 |
+| `amount`         | `DECIMAL(10, 2)`| 用户在本笔交易中分摊的金额       |
+| `share_ratio`    | `DECIMAL(5, 2)` | 共享比例（仅在按比例分账时适用）  |
 
-# production mode
-$ pnpm run start:prod
-```
+### 5. `users` 表
+用于存储用户信息。
 
-## Test
+| 字段名             | 数据类型          | 说明                       |
+|------------------|---------------|--------------------------|
+| `id`             | `BIGINT`      | 主键，用户ID                |
+| `username`       | `VARCHAR(255)`| 用户名                     |
+| `email`          | `VARCHAR(255)`| 邮箱                      |
+| `password_hash`  | `VARCHAR(255)`| 密码的哈希值                |
+| `created_at`     | `DATETIME`    | 用户创建时间                 |
 
-```bash
-# unit tests
-$ pnpm run test
+### 表之间的关系
+- `account_books` 表与 `account_book_members` 表是一对多的关系。
+- `account_books` 表与 `transactions` 表是一对多的关系。
+- `transactions` 表与 `transaction_splits` 表是一对多的关系。
+- `users` 表与 `account_book_members` 表、`transactions` 表和 `transaction_splits` 表之间都是多对一的关系。
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+这种数据库设计可以支持流程图中涉及的各种操作，包括创建账本、添加共享成员、记录和分配费用等。
