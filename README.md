@@ -47,7 +47,8 @@
 | `id`             | `BIGINT`        | 主键，分账记录ID             |
 | `transaction_id` | `BIGINT`        | 所属交易的ID                |
 | `user_id`        | `BIGINT`        | 分账的用户ID                 |
-| `amount`         | `DECIMAL(10, 2)`| 用户在本笔交易中分摊的金额       |
+| `paid_amount`    | `DECIMAL(10, 2)`| 用户在此交易中支付的金额       |
+| `owed_amount`    | `DECIMAL(10, 2)`| 用户应分摊的金额       |
 | `share_ratio`    | `DECIMAL(5, 2)` | 共享比例（仅在按比例分账时适用）  |
 
 ### 5. `users` 表
