@@ -1,11 +1,12 @@
 version: '3'
+
 services:
   app:
     build: .
     container_name: nestbackend-app
     ports:
       - "3000:3000"
-    dependencies:
+    depends_on:
       mysql:
        condition: service_healthy
     networks:
