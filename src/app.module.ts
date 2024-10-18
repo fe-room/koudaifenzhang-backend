@@ -13,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
       // 指定多个 env 文件时，第一个优先级最高
-      envFilePath: [`.env.${process.env.NODE_ENV}`],
+      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
     // 数据库模块配置，使用mysql数据库。
     TypeOrmModule.forRoot({
