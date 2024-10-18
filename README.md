@@ -57,10 +57,13 @@
 | 字段名             | 数据类型          | 说明                       |
 |------------------|---------------|--------------------------|
 | `id`             | `BIGINT`      | 主键，用户ID                |
-| `username`       | `VARCHAR(255)`| 用户名                     |
-| `email`          | `VARCHAR(255)`| 邮箱                      |
-| `password_hash`  | `VARCHAR(255)`| 密码的哈希值                |
-| `created_at`     | `DATETIME`    | 用户创建时间                 |
+| `openId`         | `VARCHAR(255)`| 唯一标识，微信用户ID          |
+| `unionId`        | `VARCHAR(255)`| 主键，用户ID                |
+| `nickname`       | `VARCHAR(255)`| 用户昵称                    |
+| `avatarUrl`       | `VARCHAR(255)`| 用户头像                   |
+| `createdAt`     | `DATETIME`    | 用户创建时间                 |
+| `updatedAt`     | `DATETIME`    | 用户创建时间                 |
+
 
 ### 表之间的关系
 - `account_books` 表与 `account_book_members` 表是一对多的关系。

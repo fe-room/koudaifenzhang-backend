@@ -5,3 +5,28 @@ services:
     container_name: nestbackend-app
     ports:
       - "3000:3000"
+    dependencies:
+      mysql:
+       condition: service_healthy
+    networks:
+      - app-network
+    links:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s  
+    networks:
+      - app-network
+      
+  networks:
+   app-network:
+     driver: bridge
